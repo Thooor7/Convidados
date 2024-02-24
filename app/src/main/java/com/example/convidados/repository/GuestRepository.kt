@@ -23,8 +23,8 @@ class GuestRepository private constructor(context: Context) {
         }
     }
 
-    fun insert(guest: GuestModel){
-        try {
+    fun insert(guest: GuestModel): Boolean{
+        return try {
             val db = guestDataBase.writableDatabase
 
             val presence = if (guest.presence) 1 else 0
@@ -59,12 +59,12 @@ class GuestRepository private constructor(context: Context) {
         }
     }
 
-    fun delete(guest: GuestModel): Boolean {
+    fun delete(id: Int): Boolean {
         return try {
             val db = guestDataBase.writableDatabase
 
             val selection = "id = ?"
-            val args = arrayOf(guest.id.toString())
+            val args = arrayOf(id.toString())
 
             db.delete(Constants.GUEST, selection, args)
             true
@@ -101,6 +101,88 @@ class GuestRepository private constructor(context: Context) {
 
             cursor.close()
         } catch (e: Exception){
+            return list
+        }
+        return list
+    }
+
+    fun  get(id: Int): GuestModel? {
+
+        var guestId: GuestModel? = null
+
+        try {
+            val db = guestDataBase.readableDatabase
+
+
+            val projection = arrayOf(
+                ID,
+                NAME,
+                PRESENCE
+            )
+
+            val selection = ID + " = ?"
+            val args = arrayOf(id.toString())
+
+            val cursor = db.query(Constants.GUEST, projection, selection,
+                args, null, null, null)
+
+            if (cursor != null && cursor.count > 0){
+                while (cursor.moveToNext()){
+                    val name = cursor.getString(cursor.getColumnIndex(NAME))
+                    val presence = cursor.getInt(cursor.getColumnIndex(PRESENCE))
+
+                    guestId = GuestModel(id, name, presence == 1)
+                }
+            }
+
+            cursor.close()
+        } catch (e: Exception){
+            return guestId
+        }
+        return guestId
+    }
+
+    fun getPresent(): List<GuestModel> {
+        val list = mutableListOf<GuestModel>()
+
+        try {
+            val db = guestDataBase.readableDatabase
+            val cursor = db.rawQuery("SELECT id, name, presence FROM Guest Where presence = 1", null)
+
+            if(cursor != null && cursor.count > 0){
+                while (cursor.moveToNext()){
+                    val id = cursor.getInt(cursor.getColumnIndex(ID))
+                    val name = cursor.getString(cursor.getColumnIndex(NAME))
+                    val presence = cursor.getInt(cursor.getColumnIndex(PRESENCE))
+
+                    list.add(GuestModel(id, name, presence == 1))
+                }
+            }
+            cursor.close()
+        }catch (e: Exception){
+            return list
+        }
+        return list
+    }
+
+    fun getAbsent(): List<GuestModel> {
+        val list = mutableListOf<GuestModel>()
+
+        try {
+            val db = guestDataBase.readableDatabase
+            val cursor = db.rawQuery("SELECT id, name, presence FROM Guest Where presence = 0", null)
+
+            if(cursor != null && cursor.count > 0){
+                while (cursor.moveToNext()){
+                    val id = cursor.getInt(cursor.getColumnIndex(ID))
+                    val name = cursor.getString(cursor.getColumnIndex(NAME))
+                    val presence = cursor.getInt(cursor.getColumnIndex(PRESENCE))
+
+                    list.add(GuestModel(id, name, presence == 1))
+                }
+            }
+            cursor.close()
+        }catch (e: Exception){
             return list
         }
         return list
