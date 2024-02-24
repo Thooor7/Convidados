@@ -40,7 +40,7 @@ class PresentFragment : Fragment() {
 
             override fun delete(id: Int) {
                 viewModel.delete(id)
-                viewModel.getAll()
+                viewModel.getPresent()
             }
         }
 
