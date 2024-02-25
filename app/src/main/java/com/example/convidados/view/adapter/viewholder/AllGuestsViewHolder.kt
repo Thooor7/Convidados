@@ -7,7 +7,7 @@ import com.example.convidados.databinding.RowGuestsBinding
 import com.example.convidados.model.GuestModel
 import com.example.convidados.view.OnGuestListener
 
-class AllGuestsViewHolder(private val bind: RowGuestsBinding, private val listener: OnGuestListener) : RecyclerView.ViewHolder(bind.root) {
+class aAllGuestsViewHolder(private val bind: RowGuestsBinding, private val listener: OnGuestListener) : RecyclerView.ViewHolder(bind.root) {
 
     fun bind(guest: GuestModel){
         bind.textName.text = guest.name

@@ -70,7 +70,11 @@ class GuestFormActivity : AppCompatActivity(), View.OnClickListener {
              val name = binding.etNome.text.toString()
              val presence = binding.present.isChecked
 
-             var model = GuestModel(guestId, name, presence)
+             var model = GuestModel().apply {
+                 this.id = guestId
+                 this.name = name
+                 this.presence = presence
+             }
              viewModel.save(model)
          }
     }
